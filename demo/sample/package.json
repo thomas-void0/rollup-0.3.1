@@ -1,0 +1,11 @@
+{
+  "name": "sample",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "node build.config.js"
+  },
+  "dependencies": {
+    "acorn": "^8.8.0",
+    "magic-string": "^0.26.2"
+  }
+}
