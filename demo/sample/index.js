@@ -12,7 +12,7 @@ class Bundle {
     this.options = options
   }
 
-  build(filename) {
+  build() {
     const entryModule = this.fetchModule(this.entryPath)
     this.statements = entryModule.expandAllStatement()
     const { code } = this.generate()
@@ -101,7 +101,7 @@ function analyse(ast, magicString) {
 
 function rollup(entry, options) {
   const bundle = new Bundle({ entry, ...options })
-  bundle.build(options.output.filename)
+  bundle.build()
 }
 
 module.exports = rollup
