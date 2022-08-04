@@ -1,0 +1,47 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Users\newrank\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add acron macgic-string
+
+PATH: 
+  C:\Python310\Scripts\;C:\Python310\;C:\Python27;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\ProgramData\chocolatey\bin;C:\Program Files\Java\jdk-17;C:\Program Files (x86)\Tencent\微信web开发者工具\dll;C:\Pro;ram Files\nodejs\;C:\Program Files\dotnet\;C:\Program Files\Git\cmd;C:\Users\newrank\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\Program Files (x86)\NetSarang\Xshell 7\;C:\Users\newrank\AppData\Local\Microsoft\WindowsApps;C:\Users\newrank\AppData\Local\Programs\Microsoft VS Code\bin;C:\Python27;C:\Program Files (x86)\Tencent\QQGameTempest\Hall.57734\;C:\Users\newrank\AppData\Roaming\npm;C:\Users\newrank\AppData\Roaming\nvm;C:\Program Files\nodejs
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  16.15.0
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/macgic-string: Not found
+      at Request.params.callback [as _callback] (C:\Users\newrank\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:66145:18)
+      at Request.self.callback (C:\Users\newrank\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:140890:22)
+      at Request.emit (node:events:527:28)
+      at Request.<anonymous> (C:\Users\newrank\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:141862:10)
+      at Request.emit (node:events:527:28)
+      at IncomingMessage.<anonymous> (C:\Users\newrank\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:141784:12)
+      at Object.onceWrapper (node:events:641:28)
+      at IncomingMessage.emit (node:events:539:35)
+      at endReadableNT (node:internal/streams/readable:1345:12)
+      at processTicksAndRejections (node:internal/process/task_queues:83:21)
+
+npm manifest: 
+  {
+    "name": "sample2.0",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC"
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
