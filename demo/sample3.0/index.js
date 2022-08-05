@@ -198,6 +198,7 @@ class Module {
     this.analyse()
   }
 
+  // 基于ast分析模块
   analyse() {
     this.imports = {}
     this.exports = {}
@@ -306,6 +307,27 @@ class Module {
     })
   }
 
+  // 重命名
+  rename(name, replacement) {
+    this.canonicalNames[name] = replacement
+  }
+
+  // 建议名称
+  suggestName(exportName, suggestion) {
+    if (!this.suggestNames[exportName]) {
+      this.suggestNames[exportName] = makeLegalIdentifier(suggestion)
+    }
+  }
+
+  // 展开所有的语句
+  expandAllStatements() {
+
+  }
+
+  // 展开语句
+  expandStatements() {
+
+  }
 }
 
 
