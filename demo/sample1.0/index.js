@@ -8,7 +8,6 @@ class Bundle {
   constructor(options) {
     // 入口文件地址
     this.entryPath = path.resolve(options.entry).replace(/\.js$/, '') + '.js'
-    // 模块依赖
     this.options = options
   }
 
