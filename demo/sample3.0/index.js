@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { default: makeLegalIdentifier } = require("../../src/utils/makeLegalIdentifier");
 
 let SOURCEMAPPING_URL = 'sourceMa';
 SOURCEMAPPING_URL += 'ppingURL';
@@ -108,6 +109,56 @@ class Bundle {
   // 生成代码
   generate() {
 
+  }
+
+  // 处理冲突
+  deconflict() {
+    let definers = {}
+    let conflicts = {}
+
+    // 找到语句中的冲突
+    this.statements.forEach(statement => {
+      Object.keys(statement._defines).forEach(name => {
+        if (definers[name]) {
+          conflicts[name] = true
+        } else {
+          definers[name] = []
+        }
+
+        definers[name].push(statement._module);
+      })
+    })
+
+    this.externalModules.forEach(module => {
+      const name = makeLegalIdentifier(module.suggestNames['*'] || module.suggestNames.default || module.id)
+      if (definers[name]) {
+        conflicts[name] = true
+      } else {
+        definers[name] = []
+      }
+
+      definers[name].push(module)
+      module.name = name
+    })
+
+    // 重新命名冲突的标识符，使它们可以位于相同的范围内
+    Object.keys(conflicts).forEach(name => {
+      const modules = definers[name]
+      modules.pop()
+
+      modules.forEach(module => {
+        const replacement = getSafeName(name);
+        module.rename(name, replacement)
+      })
+    })
+
+    function getSafeName(name) {
+      while (conflicts[name]) {
+        name = `_${name}`
+      }
+      conflicts[name] = true
+      return name
+    }
   }
 }
 
