@@ -1,4 +1,9 @@
 const fs = require("fs");
+
+import MagicString from 'magic-string';
+import getLocation from '../../src/utils/getLocation';
+import { parse } from 'acorn';
+
 const path = require("path");
 const { default: makeLegalIdentifier } = require("../../src/utils/makeLegalIdentifier");
 
@@ -167,6 +172,139 @@ class ExternalModule {
 }
 
 class Module {
+  constructor({ path, code, bundle }) {
+    this.bundle = bundle;
+    this.path = path;
+    this.relativePath = 'remove.js'
+
+    this.code = new MagicString(code, {
+      filename: path
+    })
+
+    this.suggestNames = {}
+    this.comments = []
+
+    try {
+      this.ast = parse(code, {
+        ecmaVersion: 6,
+        sourceType: "module",
+        onComment: (block, text, start, end) => this.comments.push({ block, text, start, end })
+      })
+    } catch (error) {
+      error.file = path
+      throw error;
+    }
+
+    this.analyse()
+  }
+
+  analyse() {
+    this.imports = {}
+    this.exports = {}
+
+    this.ast.body.forEach(node => {
+      let source;
+
+      if (node.type === "ImportDeclaration") {
+        source = node.source.value;
+
+        node.specifiers.forEach(specifier => {
+          const isDefault = specifier.type === "ImportDeclaration"
+          const isNamespace = specifier.type === "ImportNamespaceSpecifier"
+
+          const localName = specifier.local.name
+          const name = isDefault ? 'default' : isNamespace ? '*' : specifier.imported.name
+
+          if (this.imports[localName]) {
+            const err = new Error(`Duplicated import '${localName}'`);
+            err.file = this.path
+            err.loc = getLocation(this.code.original, specifier.start)
+            throw err;
+          }
+
+          this.imports[localName] = {
+            source,
+            name,
+            localName
+          }
+        })
+
+      } else if (/^Export/.test(node.type)) {
+        if (node.type === "ExportDefaultDeclaration") {
+          const isDeclaration = /Declaration$/.test(node.declaration.type);
+
+          this.exports.default = {
+            node,
+            name: 'default',
+            localName: isDeclaration ? node.declaration.id.name : "default",
+            isDeclaration
+          }
+        } else if (node.type === "ExportNamedDeclaration") {
+          source = node.source && node.source.value
+
+          if (node.specifiers.length) {
+            node.specifiers.forEach(specifier => {
+              const localName = specifier.local.name
+              const exportedName = specifier.exported.name;
+
+              this.exports[exportedName] = {
+                localName,
+                exportedName
+              }
+
+              if (source) {
+                this.imports[localName] = {
+                  source,
+                  localName,
+                  name: exportedName
+                }
+              }
+            })
+          } else {
+            let declaration = node.declaration
+            let name;
+
+            if (declaration.type === "VariableDeclaration") {
+              name = declaration.declarations[0].id.name
+            } else {
+              name = declaration.id.name
+            }
+
+            this.exports[name] = {
+              node,
+              localName: name,
+              expression: declaration
+            }
+          }
+        }
+      }
+    });
+
+    analyse(this.ast, this.code, this);
+
+    this.definedNames = this.ast._scope.names.slice()
+
+    this.canonicalNames = {};
+
+    this.definitions = {}
+    this.definitionPromises = {}
+    this.modifications = {}
+
+    this.ast.body.forEach(statement => {
+      Object.keys(statement._defines).forEach(name => {
+        this.definitions[name] = statement
+      })
+
+      Object.keys(statement._modifies).forEach(name => {
+        if (this.modifications[name]) {
+          this.modifications[name] = []
+        }
+
+        this.modifications[name].push(statement)
+      })
+
+    })
+  }
 
 }
 
