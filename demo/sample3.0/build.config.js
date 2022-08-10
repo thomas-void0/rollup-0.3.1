@@ -1,1 +1,0 @@
-import rollup from "./index"
