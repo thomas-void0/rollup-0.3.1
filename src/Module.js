@@ -19,7 +19,7 @@ export default class Module {
 
 		this.code = new MagicString(code, {
 			filename: path
-		});
+		}); // 文件内容
 
 		this.suggestedNames = {};
 		this.comments = [];
@@ -43,6 +43,7 @@ export default class Module {
 		this.imports = {};
 		this.exports = {};
 
+		// 添加不同类型的imports对象和exports对象
 		this.ast.body.forEach(node => {
 			let source;
 
@@ -58,6 +59,7 @@ export default class Module {
 					const localName = specifier.local.name;
 					const name = isDefault ? 'default' : isNamespace ? '*' : specifier.imported.name;
 
+					// 多次导入，报错
 					if (has(this.imports, localName)) {
 						const err = new Error(`Duplicated import '${localName}'`);
 						err.file = this.path;
@@ -141,6 +143,7 @@ export default class Module {
 
 
 
+		// 调用外部工具函数,主要是在节点上增加作用域信息，增加读取和修改信息
 		analyse(this.ast, this.code, this);
 
 		this.definedNames = this.ast._scope.names.slice();
@@ -152,10 +155,12 @@ export default class Module {
 		this.modifications = {};
 
 		this.ast.body.forEach(statement => {
+			// 定义的节点
 			Object.keys(statement._defines).forEach(name => {
 				this.definitions[name] = statement;
 			});
 
+			// 修改的节点
 			Object.keys(statement._modifies).forEach(name => {
 				if (!has(this.modifications, name)) {
 					this.modifications[name] = [];
