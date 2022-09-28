@@ -342,6 +342,7 @@ export default class Module {
 			});
 	}
 
+	// 展开所有的语句
 	expandAllStatements(isEntryModule) {
 		let allStatements = [];
 
